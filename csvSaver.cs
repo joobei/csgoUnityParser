@@ -3,15 +3,13 @@ using System.IO;
 
 public class csvSaver
 {
-
+    //TODO handle illegal chars in titles 
     public void writeListCSV(List<AdvancedPosition> data, string title, string path)
     {
         Directory.CreateDirectory(path);
         if (!path.EndsWith("/")) path += "/";
         
         path += title + ".csv";
-
-        
 
         using (StringWriter writer = new StringWriter())
         {

@@ -5,6 +5,7 @@ using DemoInfo;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Text.RegularExpressions;
 
 public static class Extensions
 {
@@ -85,6 +86,23 @@ public static class Extensions
             if (!str.Contains(item)) return false;
         }
         return true;
+    }
+
+    public static bool Contains(this string str, char[] chars)
+    {
+        string[] charsInStrings = new string[chars.Length];
+        for (int i = 0; i < charsInStrings.Length; i++)
+        {
+            charsInStrings[i] = "" + chars[i];
+        }
+
+        //Double checks first char in string | doesnt bother me
+        return Contains(str, charsInStrings[0], charsInStrings);
+    }
+
+    public static string CleanInput(this string strIn)
+    {         
+            return Regex.Replace(strIn, @"[^\w\.@-]", ""); 
     }
 
     public static T Clone<T>(this T source)

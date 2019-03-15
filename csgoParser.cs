@@ -222,7 +222,7 @@ public class csgoParser
         int matchTimeMin = (int)matchTime / 60;
         int RemainderMatchTimeSec = (int)matchTime % 60;
 
-        return "total match time: " + matchTimeMin + ":" + RemainderMatchTimeSec + " min";
+        return matchTimeMin + ":" + RemainderMatchTimeSec + " min";
     }
 
     public Team getWinningTeam()
@@ -266,6 +266,12 @@ public class csgoParser
     {
         string title = p.Name + "round_" + round;
 
+        //TODO handle better | in UI class
+        if (title.Contains(Path.GetInvalidFileNameChars()))
+        {
+            Console.WriteLine("Player name {0} contains illegal symbols \n name gets changed to {1}", p.Name, p.Name.CleanInput());
+            title = p.Name.CleanInput() + "round_" + round;
+        }
         List<AdvancedPosition> data = getPlayerPathInRound(p, round);
 
         csv.writeListCSV(data, title, path);
@@ -278,8 +284,8 @@ public class csgoParser
         string res;
         string intro = string.Format("match on {0}\n match time: {1}", Map,getFormattedMatchTime());
 
-        string terrorists = "Terrorists";
-        string counterterrorists = "Counterterrorists";
+        string terrorists = "Terrorists: ";
+        string counterterrorists = "Counterterrorists: ";
 
         foreach (Player  p in Terrorists)
         {
@@ -291,14 +297,14 @@ public class csgoParser
             counterterrorists += string.Format("\n {0}", p.Name);
         }
 
-        res = intro + terrorists + counterterrorists;
+        res = intro + " \n" + terrorists + " \n" + counterterrorists;
 
         return res;
     }
 
     public string GetEndGameStatsString()
     {
-        return string.Format("winning team {0} \n {1} rounds played", getWinningTeam(), RoundsPlayed);
+        return string.Format("winning team: {0} \n {1} rounds played", getWinningTeam(), RoundsPlayed);
     }
 
     public void Reset()

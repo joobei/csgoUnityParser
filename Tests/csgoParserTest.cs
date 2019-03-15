@@ -12,7 +12,7 @@ public class csgoParserTests
 {
     //TODO relative path
     string pathMirageDemo = @"D:/Benutzer/5haffke/csgoParserProject/Tests/test_demos/mirage.dem";
-    string outputPath = @"D:/Benutzer/5haffke/csgoParserProject/Tests//output";
+    string outputPath = @"D:/Benutzer/5haffke/csgoParserProject/Tests/output";
    
     // A Test behaves as an ordinary method
     [Test]
@@ -85,16 +85,17 @@ public class csgoParserTests
     }
 
     [Test]
-    [Ignore("not implemented")]
+    
     public void testMainFunction()
     {
         string[] args = new string[2];
         args[0] = pathMirageDemo;
         args[1] = outputPath;
 
-        StartUp_console.Main(args);
+        TestContext.WriteLine(args[0]);
+        TestContext.WriteLine(args[1]);
 
-        //Assert.
+        StartUp_console.Main(args);
     }
 
     [Test]
@@ -105,8 +106,10 @@ public class csgoParserTests
         Player p = parser.Players[0];
         string header;
         int round = 1;
+        //Player illegalName = parser.Players[5];
 
         parser.saveToCSV(p, round, outputPath);
+        //parser.saveToCSV(illegalName, round, outputPath);
 
         string[] files = Directory.GetFiles(outputPath);
         string[] filePath = files.Where(f => f.Contains(p.Name,round.ToString())).ToArray();

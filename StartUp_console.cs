@@ -15,6 +15,7 @@ public class StartUp_console
 
         parser.parseAllRounds();
 
+        
         parser.saveToCSV(saveFolder);
 
         Console.WriteLine("parsing finished");
