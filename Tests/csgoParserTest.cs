@@ -106,13 +106,13 @@ public class csgoParserTests
         Player p = parser.Players[0];
         string header;
         int round = 1;
-        //Player illegalName = parser.Players[5];
+        Player illegalName = parser.Players[5];
 
         parser.saveToCSV(p, round, outputPath);
-        //parser.saveToCSV(illegalName, round, outputPath);
+        parser.saveToCSV(illegalName, round, outputPath);
 
         string[] files = Directory.GetFiles(outputPath);
-        string[] filePath = files.Where(f => f.Contains(p.Name,round.ToString())).ToArray();
+        string[] filePath = files.Where(f => f.ContainsAll(p.Name,round.ToString())).ToArray();
 
         //directory is created and file is saved there
         Assert.IsTrue(Directory.Exists(outputPath));
@@ -127,7 +127,9 @@ public class csgoParserTests
             Assert.IsFalse(reader.EndOfStream);
         }
         //header is written correctly
-        Assert.IsTrue(header.Contains("ticks", "posX", "posY", "posZ"));
+        Assert.IsTrue(header.ContainsAll("ticks", "posX", "posY", "posZ"));
     }
+
+    
 }
 

@@ -74,7 +74,7 @@ public static class Extensions
     /// <param name="match">substring to match</param>
     /// <param name="moreMatches">optional, addditional matches</param>
     /// <returns>true if str contains all substrings</returns>
-    public static bool Contains(this string str, string match, params string[] moreMatches)
+    public static bool ContainsAll(this string str, string match, params string[] moreMatches)
     {
         //copy all to one array
         string[] matches = new string[moreMatches.Length + 1];
@@ -88,7 +88,7 @@ public static class Extensions
         return true;
     }
 
-    public static bool Contains(this string str, char[] chars)
+    public static bool ContainsAll(this string str, char[] chars)
     {
         string[] charsInStrings = new string[chars.Length];
         for (int i = 0; i < charsInStrings.Length; i++)
@@ -97,12 +97,57 @@ public static class Extensions
         }
 
         //Double checks first char in string | doesnt bother me
-        return Contains(str, charsInStrings[0], charsInStrings);
+        return ContainsAll(str, charsInStrings[0], charsInStrings);
     }
 
-    public static string CleanInput(this string strIn)
-    {         
-            return Regex.Replace(strIn, @"[^\w\.@-]", ""); 
+    public static bool ContainsAny(this string str, string match, params string[] moreOptions)
+    {
+        //copy all to one array
+        string[] matches = new string[moreOptions.Length + 1];
+        matches[0] = match;
+        moreOptions.CopyTo(matches, 1);
+
+        foreach (string item in matches)
+        {
+            if (str.Contains(item)) return true;
+        }
+        return false;
+    }
+
+    public static bool containsAny(this string str, char[] chars)
+    {
+        string[] charsInStrings = new string[chars.Length];
+        for (int i = 0; i < charsInStrings.Length; i++)
+        {
+            charsInStrings[i] = "" + chars[i];
+        }
+
+        //Double checks first char in string | doesnt bother me
+        return ContainsAny(str, charsInStrings[0], charsInStrings);
+    }
+
+
+    /// <summary>
+    /// Removes any non-alphanumeric character from a string besides '.','@','-'
+    /// </summary>
+    /// <param name="strIn"></param>
+    /// <returns></returns>
+    public static string CleanInput(this string strIn, bool allowPathSeparators = false)
+    {
+        char separator = Path.PathSeparator;
+        char direcSep = Path.DirectorySeparatorChar;
+        char altDirecSep = Path.AltDirectorySeparatorChar;
+        char volumeSeperator = Path.VolumeSeparatorChar;
+        Console.WriteLine(direcSep);
+        Console.WriteLine(volumeSeperator);
+
+        string pattern = string.Format(@"[^\w\.@{0}{1}{1}{2}{3}{3}-]", separator,direcSep,volumeSeperator, altDirecSep);
+        strIn = Regex.Replace(strIn, pattern, "");
+
+        if (!allowPathSeparators)strIn = Regex.Replace(strIn, @"[^\w\.@-]", "");
+
+
+        return strIn;
     }
 
     public static T Clone<T>(this T source)

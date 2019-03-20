@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedPosition.cs" />
+    <Compile Include="Tests\extensionsTest.cs" />
     <Compile Include="csgoParser.cs" />
     <Compile Include="csvSaver.cs" />
     <Compile Include="Extensions.cs" />

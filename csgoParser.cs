@@ -264,14 +264,8 @@ public class csgoParser
 
     public void saveToCSV(Player p, int round, string path)
     {
-        string title = p.Name + "round_" + round;
+        string title = p.Name + "-round_" + round;
 
-        //TODO handle better | in UI class
-        if (title.Contains(Path.GetInvalidFileNameChars()))
-        {
-            Console.WriteLine("Player name {0} contains illegal symbols \n name gets changed to {1}", p.Name, p.Name.CleanInput());
-            title = p.Name.CleanInput() + "round_" + round;
-        }
         List<AdvancedPosition> data = getPlayerPathInRound(p, round);
 
         csv.writeListCSV(data, title, path);
