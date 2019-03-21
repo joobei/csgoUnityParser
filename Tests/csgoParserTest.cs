@@ -84,8 +84,7 @@ public class csgoParserTests
 
     }
 
-    [Test]
-    
+    [Test]  
     public void testMainFunction()
     {
         string[] args = new string[2];
@@ -105,6 +104,7 @@ public class csgoParserTests
         parser.parseAllRounds();
         Player p = parser.Players[0];
         string header;
+        string secondLine;
         int round = 1;
         Player illegalName = parser.Players[5];
 
@@ -125,9 +125,16 @@ public class csgoParserTests
             header = reader.ReadLine();
             //file doesnt end after header
             Assert.IsFalse(reader.EndOfStream);
+            secondLine = reader.ReadLine();
         }
+
+        int amountOfCommataInValues = secondLine.Count(f => f == ',');
+        int amountOfCommataInHeader = header.Count(f => f == ',');
+
         //header is written correctly
         Assert.IsTrue(header.ContainsAll("ticks", "posX", "posY", "posZ"));
+        //BUG unwanted values are written in csv - maybe unicode|encoding error
+        Assert.AreEqual(amountOfCommataInHeader, amountOfCommataInValues);
     }
 
     

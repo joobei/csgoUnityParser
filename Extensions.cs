@@ -150,6 +150,13 @@ public static class Extensions
         return strIn;
     }
 
+    
+    public static string DotSeparation(this float f)
+    {
+        string cultureSpecific = f.ToString();
+        return Regex.Replace(cultureSpecific, ",", ".");
+    }
+
     public static T Clone<T>(this T source)
     {
         if (!typeof(T).IsSerializable)

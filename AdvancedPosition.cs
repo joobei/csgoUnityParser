@@ -42,7 +42,7 @@ public class AdvancedPosition : IFormattable
             case "ALL":
                 return string.Format("Position: {0} \n viewdirection {1}{2}" , position.ToString(), orientationX,orientationY);
             case "CSV":
-                return string.Format("{0},{1},{2},{3},{4}", position.X, position.Y, position.Z, orientationX, orientationY);
+                return string.Format("{0},{1},{2},{3},{4}", position.X.DotSeparation(), position.Y.DotSeparation(), position.Z.DotSeparation(), orientationX.DotSeparation(), orientationY.DotSeparation());
             default:
                 throw new FormatException(String.Format("The {0} format string is not supported.", format));
         }

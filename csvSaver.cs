@@ -13,7 +13,7 @@ public class csvSaver
 
         title = title.CleanInput();
         path = path.CleanInput(true);
-        
+
 
         path += title + ".csv";
 
@@ -25,7 +25,15 @@ public class csvSaver
         {
 
             T aPos = data[ticksDone];
+
+
             string line = (ticksDone + 1) + "," + aPos.ToString("csv", null);
+            if (ticksDone < 5)
+            {
+                Console.WriteLine(aPos.ToString("csv", null));
+                Console.WriteLine(line);
+            }
+
 
             builder.AppendLine(line);
 
@@ -35,6 +43,8 @@ public class csvSaver
         {
             output.Write(builder.ToString());
         }
+
+
     }
 }
 
