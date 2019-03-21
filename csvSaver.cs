@@ -26,7 +26,7 @@ public class csvSaver
             T aPos = data[ticksDone];
 
 
-            string line = (ticksDone + 1) + "," + aPos.ToString("csv", null);
+            string line = (ticksDone + 1) + "," + aPos.ToString("csv");
 
 
             builder.AppendLine(line);

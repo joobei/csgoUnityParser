@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using DemoInfo;
 using System.IO;
@@ -19,7 +18,7 @@ public class csgoParserTests
     public void testReplayProperlyLoaded()
     {
         csgoParser parser = new csgoParser(pathMirageDemo);
-        parser.parseToMatchStart();
+        
 
 
 
@@ -36,25 +35,24 @@ public class csgoParserTests
 
 
 
-        Assert.AreEqual(Team.CounterTerrorist, parser.getWinningTeam());
+        Assert.AreEqual(Team.CounterTerrorist, parser.GetWinningTeam());
         Assert.AreEqual(25, parser.RoundsPlayed);
-        Assert.AreEqual(25, parser.pathInEveryRound.Keys.Count);
-        Assert.AreEqual(25, parser.getPlayerPathInAllRounds(parser.Players[0]).Keys.Count);
+        Assert.AreEqual(25, parser.GetPlayerPathInAllRounds(parser.Players[0]).Keys.Count);
 
-        foreach (var item in parser.pathInEveryRound)
+        for (int i = 0; i < parser.RoundsPlayed, i++)
         {
-            var underlyingDictionary = item.Value;
+            var allPlayerPathsInRound = parser.GetAllPlayerPathInRound(i); 
 
             //for every tick in a round a position is saved
-            var ticksPerRound = parser.getTicksPerRound(item.Key);
+            var ticksPerRound = parser.GetTicksPerRound(i);
 
-            List<AdvancedPosition> path = underlyingDictionary.getFirstValue();
+            List<AdvancedPosition> path = allPlayerPathsInRound.getFirstValue();
 
             Assert.AreEqual(ticksPerRound, path.Count);
             
 
             //10 player path are saved each round
-            Assert.AreEqual(underlyingDictionary.Keys.Count, 10);
+            Assert.AreEqual(allPlayerPathsInRound.Keys.Count, 10);
         }
     }
 
@@ -63,7 +61,6 @@ public class csgoParserTests
     {
         
         csgoParser parser = new csgoParser(pathMirageDemo);
-        parser.parseToMatchStart();
 
         Dictionary<Player, List<AdvancedPosition>> dic = new Dictionary<Player, List<AdvancedPosition>>();
         Player[] players = parser.Players;
@@ -108,8 +105,8 @@ public class csgoParserTests
         int round = 1;
         Player illegalName = parser.Players[5];
 
-        parser.saveToCSV(p, round, outputPath);
-        parser.saveToCSV(illegalName, round, outputPath);
+        parser.SaveToCSV(p, round, outputPath);
+        parser.SaveToCSV(illegalName, round, outputPath);
 
         string[] files = Directory.GetFiles(outputPath);
         string[] filePath = files.Where(f => f.ContainsAll(p.Name,round.ToString())).ToArray();

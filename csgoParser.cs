@@ -6,67 +6,67 @@ using System.Linq;
 using System;
 using System.Numerics;
 
+/// <summary>
+/// Parses a replay and saves each player's position and view direction,
+/// as well as game-specific info like map, match time or participating players
+/// </summary>
 public class csgoParser
 {
-    public Player[] Players = new Player[10];
-    public List<Player> Terrorists;
-    public List<Player> Counterterrorists;
-
-    public int HighestParsedRound { get; private set; }
-    public int RoundsPlayed { get; private set; }
+    public Player[] Players;
+    public Player[] Terrorists;
+    public Player[] Counterterrorists;
 
     public string Map { get; private set; }
+    public int RoundsPlayed { get; private set; }
 
-    public Dictionary<int, Dictionary<Player, List<AdvancedPosition>>> pathInEveryRound;
 
-    private Dictionary<int, int> ticksPerRound;
+    private const float PARSERTICKRATE = 32;
+    private Dictionary<int, Dictionary<Player, List<AdvancedPosition>>> _pathInEveryRound;
+    private Dictionary<int, int> _ticksPerRound;
 
-    private string defaultSaveFolder;
-    private csvSaver csv = new csvSaver();
-    private string filePath;
-    private float parserTickrate = 32;
-    private Team winningTeam = Team.Spectate;
-    private float matchTime = 0;
+    private string _defaultSaveFolder;
+    private csvSaver csv;
+    private string _filePath;
+    
+    private Team _winningTeam = Team.Spectate;
+    private float _matchTime = 0;
+    private int _highestParsedRound;
 
     public csgoParser(string fileName)
     {
-        Construct(fileName);
-        defaultSaveFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/CSV/";
+        construct(fileName);
+        _defaultSaveFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/CSV/";
     }
 
-    public csgoParser(string fileName,string saveFolder)
+    public csgoParser(string fileName, string saveFolder)
     {
-        Construct(fileName);
-        defaultSaveFolder = saveFolder;
+        construct(fileName);
+        _defaultSaveFolder = saveFolder;
     }
 
-    public void Construct(string fileName)
-    {
-        Reset();
-        
-        filePath = fileName;
 
-        parseToMatchStart();
-    }
-
-    public bool parseToMatchStart()
+    /// <summary>
+    /// Parses the replay till the matchHasStarted event occurs
+    /// Initializes game-specific info
+    /// </summary>
+    /// <returns>true if it successully ran through</returns>
+    public bool ParseToMatchStart()
     {
-        using (var fileStream = File.OpenRead(filePath))
+        using (var fileStream = File.OpenRead(_filePath))
         {
             using (DemoParser parser = new DemoParser(fileStream))
             {
                 parser.ParseHeader();
-                Map = parser.Header.MapName;    
-
-                matchTime = parser.Header.PlaybackTime;
+                Map = parser.Header.MapName;
+                _matchTime = parser.Header.PlaybackTime;
 
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
                 parser.MatchStarted += (sender, e) =>
                 {
-                    Counterterrorists = parser.PlayingParticipants.Where(a => a.Team == Team.CounterTerrorist).ToList();
-                    Terrorists = parser.PlayingParticipants.Where(a => a.Team == Team.Terrorist).ToList();
+                    Counterterrorists = parser.PlayingParticipants.Where(a => a.Team == Team.CounterTerrorist).ToArray();
+                    Terrorists = parser.PlayingParticipants.Where(a => a.Team == Team.Terrorist).ToArray();
 
                     Terrorists.CopyTo(Players, 0);
                     Counterterrorists.CopyTo(Players, 5);
@@ -78,7 +78,7 @@ public class csgoParser
             return true;
         }
     }
-    
+
     public bool parseAllRounds()
     {
         Player roundMVP = null;
@@ -90,7 +90,7 @@ public class csgoParser
         Dictionary<Player, List<AdvancedPosition>> PlayerPathsRound = new Dictionary<Player, List<AdvancedPosition>>();
         Dictionary<Player, List<float>> lastOrientationAlive = new Dictionary<Player, List<float>>();
 
-        using (var fileStream = File.OpenRead(filePath))
+        using (var fileStream = File.OpenRead(_filePath))
         {
             using (DemoParser parser = new DemoParser(fileStream))
             {
@@ -113,13 +113,13 @@ public class csgoParser
                 parser.TickDone += (sender, e) =>
                 {
                     if (hasMatchStarted && freezeTimeEnded)
-                    { 
+                    {
                         foreach (Player p in Players)
                         {
                             if (p.IsAlive) lastOrientationAlive[p] = new List<float>(2) { p.ViewDirectionX, p.ViewDirectionY };
 
                             Vector3 pos = Extensions.FromSourceEngineVector(p.Position);
-                            
+
                             float viewX = p.ViewDirectionX;
                             float viewY = p.ViewDirectionY;
 
@@ -132,7 +132,7 @@ public class csgoParser
                             }
 
                             PlayerPathsRound.AddValueToExistingList(p, new AdvancedPosition(pos, viewX, viewY));
-                          
+
                         }
                         ticksDone++;
                     }
@@ -145,25 +145,25 @@ public class csgoParser
 
                 parser.WinPanelMatch += (sender, e) =>
                 {
-                    winningTeam = roundMVP.Team;                    
+                    _winningTeam = roundMVP.Team;
                 };
 
                 parser.RoundOfficiallyEnd += (sender, e) =>
                 {
                     roundsParsed++;
-                   
+
 
                     //ensure round has not been parsed before
-                    if (roundsParsed > HighestParsedRound)
+                    if (roundsParsed > _highestParsedRound)
                     {
-                        HighestParsedRound = roundsParsed;
+                        _highestParsedRound = roundsParsed;
 
                         //index starts at 1
                         Dictionary<Player, List<AdvancedPosition>> temp = new Dictionary<Player, List<AdvancedPosition>>(PlayerPathsRound);
-                        pathInEveryRound.Add(roundsParsed, temp);
-                        PlayerPathsRound.refillDictionary<Player,List<AdvancedPosition>,AdvancedPosition>();
+                        _pathInEveryRound.Add(roundsParsed, temp);
+                        PlayerPathsRound.refillDictionary<Player, List<AdvancedPosition>, AdvancedPosition>();
 
-                        ticksPerRound.Add(roundsParsed, ticksDone);
+                        _ticksPerRound.Add(roundsParsed, ticksDone);
                         ticksDone = 0;
                     }
 
@@ -174,107 +174,110 @@ public class csgoParser
                 parser.ParseToEnd();
 
                 RoundsPlayed = roundsParsed;
-                
+
                 return true;
             }
         }
     }
 
-    public List<AdvancedPosition> getPlayerPathInRound(Player player, int round)
+    public List<AdvancedPosition> GetPlayerPathInRound(Player player, int round)
     {
         Dictionary<Player, List<AdvancedPosition>> playerPathsInThatRound;
         List<AdvancedPosition> path;
 
-        pathInEveryRound.TryGetValue(round, out playerPathsInThatRound);
+        _pathInEveryRound.TryGetValue(round, out playerPathsInThatRound);
         playerPathsInThatRound.TryGetValue(player, out path);
 
         return path;
     }
 
-    public Dictionary<Player,List<AdvancedPosition>> getAllPlayerPathInRound(int round)
+    public Dictionary<Player, List<AdvancedPosition>> GetAllPlayerPathInRound(int round)
     {
         Dictionary<Player, List<AdvancedPosition>> playerPathsInThatRound;
-        pathInEveryRound.TryGetValue(round, out playerPathsInThatRound);
+        _pathInEveryRound.TryGetValue(round, out playerPathsInThatRound);
 
         return playerPathsInThatRound;
     }
 
-    public Dictionary<int , List<AdvancedPosition>> getPlayerPathInAllRounds(Player player)
+    public Dictionary<int, List<AdvancedPosition>> GetPlayerPathInAllRounds(Player player)
     {
         Dictionary<int, List<AdvancedPosition>> res = new Dictionary<int, List<AdvancedPosition>>();
         for (int i = 1; i <= RoundsPlayed; i++)
         {
-            res.Add(i, getPlayerPathInRound(player, i));
+            res.Add(i, GetPlayerPathInRound(player, i));
         }
-
         return res;
     }
 
-    public int getTicksPerRound(int round)
+    public int GetTicksPerRound(int round)
     {
         int ticksDone;
-        ticksPerRound.TryGetValue(round, out ticksDone);
+        _ticksPerRound.TryGetValue(round, out ticksDone);
         return ticksDone;
     }
 
-    public float getRoundLengthInSeconds(int round)
+    public float GetRoundLengthInSeconds(int round)
     {
-        int ticksDone = getTicksPerRound(round);
-        return ticksDone / parserTickrate;
+        int ticksDone = GetTicksPerRound(round);
+        return ticksDone / PARSERTICKRATE;
     }
 
-    public string getFormattedMatchTime()
+    public string GetFormattedMatchTime()
     {
 
-        int matchTimeMin = (int)matchTime / 60;
-        int RemainderMatchTimeSec = (int)matchTime % 60;
+        int matchTimeMin = (int)_matchTime / 60;
+        int RemainderMatchTimeSec = (int)_matchTime % 60;
 
         return matchTimeMin + ":" + RemainderMatchTimeSec + " min";
     }
 
-    public Team getWinningTeam()
+    public Team GetWinningTeam()
     {
-        return winningTeam;
+        return _winningTeam;
     }
 
-    public void saveToCSV() => saveToCSV(defaultSaveFolder);
-    public void saveToCSV(string path)
+    public void SaveToCSV()
+    {
+        SaveToCSV(_defaultSaveFolder);
+    }
+
+    public void SaveToCSV(string path)
     {
         for (int i = 1; i <= RoundsPlayed; i++)
         {
             foreach (Player p in Players)
             {
-            saveToCSV(p,i,path);
-            }  
+                SaveToCSV(p, i, path);
+            }
         }
     }
 
-    public void saveToCSV(int round)
+    public void SaveToCSV(int round)
     {
         foreach (Player p in Players)
         {
-            saveToCSV(p, round);
+            SaveToCSV(p, round);
         }
     }
 
-    public void saveToCSV(Player p)
+    public void SaveToCSV(Player p)
     {
         for (int round = 0; round < RoundsPlayed; round++)
         {
-            saveToCSV(p, round,defaultSaveFolder);
-        }  
+            SaveToCSV(p, round, _defaultSaveFolder);
+        }
     }
 
-    public void saveToCSV(Player p, int round)
+    public void SaveToCSV(Player p, int round)
     {
-        saveToCSV(p, round, defaultSaveFolder);
+        SaveToCSV(p, round, _defaultSaveFolder);
     }
 
-    public void saveToCSV(Player p, int round, string path)
+    public void SaveToCSV(Player p, int round, string path)
     {
         string title = p.Name + "-round_" + round;
 
-        List<AdvancedPosition> data = getPlayerPathInRound(p, round);
+        List<AdvancedPosition> data = GetPlayerPathInRound(p, round);
 
         csv.writeListCSV(data, title, path);
 
@@ -282,19 +285,28 @@ public class csgoParser
 
     public string GetDefaultSaveFolder()
     {
-        return defaultSaveFolder;
+        return _defaultSaveFolder;
     }
 
-    override
-    public string ToString()
+    private void construct(string fileName)
+    {
+        Reset();
+
+        _filePath = fileName;
+        csv = new csvSaver();
+
+        ParseToMatchStart();
+    }
+
+    public override string ToString()
     {
         string res;
-        string intro = string.Format("match on {0}\n match time: {1}", Map,getFormattedMatchTime());
+        string intro = string.Format("match on {0}\n match time: {1}", Map, GetFormattedMatchTime());
 
         string terrorists = "Terrorists: ";
         string counterterrorists = "Counterterrorists: ";
 
-        foreach (Player  p in Terrorists)
+        foreach (Player p in Terrorists)
         {
             terrorists += string.Format("\n {0}", p.Name);
         }
@@ -311,27 +323,26 @@ public class csgoParser
 
     public string GetEndGameStatsString()
     {
-        return string.Format("winning team: {0} \n {1} rounds played", getWinningTeam(), RoundsPlayed);
+        return string.Format("winning team: {0} \n {1} rounds played", GetWinningTeam(), RoundsPlayed);
     }
 
     public void Reset()
     {
 
-        filePath = "";
-        parserTickrate = 1;
-        winningTeam = Team.Spectate;
-        matchTime = 0;
+        _filePath = "";
+        _winningTeam = Team.Spectate;
+        _matchTime = 0;
 
         Players = new Player[10];
-        Terrorists = new List<Player>();
-        Counterterrorists = new List<Player>();
+        Terrorists = new Player[5];
+        Counterterrorists = new Player[5];
 
-        HighestParsedRound = 0;
+        _highestParsedRound = 0;
         RoundsPlayed = 0;
         Map = "";
-        
 
-        pathInEveryRound = new Dictionary<int, Dictionary<Player, List<AdvancedPosition>>>();
-        ticksPerRound = new Dictionary<int, int>();
+
+        _pathInEveryRound = new Dictionary<int, Dictionary<Player, List<AdvancedPosition>>>();
+        _ticksPerRound = new Dictionary<int, int>();
     }
 }

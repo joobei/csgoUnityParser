@@ -17,7 +17,7 @@ public class StartUp_console
         parser.parseAllRounds();
 
 
-        parser.saveToCSV(saveFolder);
+        parser.SaveToCSV(saveFolder);
 
         Console.WriteLine("parsing finished");
         Console.Write(parser.GetEndGameStatsString());

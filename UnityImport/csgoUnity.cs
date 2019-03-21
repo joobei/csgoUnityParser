@@ -21,7 +21,7 @@ public class csgoUnity : MonoBehaviour
 
     public void parseToMatchStart()
     {
-        ReplayLoaded = parser.parseToMatchStart();
+        ReplayLoaded = parser.ParseToMatchStart();
     }
 
     public void parseAllRounds()
@@ -49,7 +49,7 @@ public class csgoUnity : MonoBehaviour
     {
         if (!ReplayLoaded) return "00:00";
 
-        return parser.getFormattedMatchTime();
+        return parser.GetFormattedMatchTime();
     }
 
     public int GetRoundsPlayed()
@@ -62,20 +62,20 @@ public class csgoUnity : MonoBehaviour
         return parser.Map;
     }
 
-    public List<AdvancedPosition> getPlayerPathInRound(Player p, int round) => parser.getPlayerPathInRound(p, round);
+    public List<AdvancedPosition> getPlayerPathInRound(Player p, int round) => parser.GetPlayerPathInRound(p, round);
 
-    public Dictionary<Player, List<AdvancedPosition>> getAllPlayerPathInRound(int round) => parser.getAllPlayerPathInRound(round);
+    public Dictionary<Player, List<AdvancedPosition>> getAllPlayerPathInRound(int round) => parser.GetAllPlayerPathInRound(round);
 
-    public Dictionary<int, List<AdvancedPosition>> getPlayerPathInAllRounds(Player player) => parser.getPlayerPathInAllRounds(player);
+    public Dictionary<int, List<AdvancedPosition>> getPlayerPathInAllRounds(Player player) => parser.GetPlayerPathInAllRounds(player);
 
-    public void saveToCSV(int round) => parser.saveToCSV(round);
+    public void saveToCSV(int round) => parser.SaveToCSV(round);
 
-    public void saveToCSV(Player p) => parser.saveToCSV(p);
+    public void saveToCSV(Player p) => parser.SaveToCSV(p);
 
 
-    public void saveToCSV(Player p, int round) => parser.saveToCSV(p, round);
+    public void saveToCSV(Player p, int round) => parser.SaveToCSV(p, round);
 
-    public void saveToCSV(Player p, int round, string path) => parser.saveToCSV(p, round, path);
+    public void saveToCSV(Player p, int round, string path) => parser.SaveToCSV(p, round, path);
 
     public void Reset()
     {
