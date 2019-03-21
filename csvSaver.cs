@@ -5,7 +5,6 @@ using System.Text;
 
 public class csvSaver
 {
-    //TODO handle illegal chars in path | check symbol encoding 
     public void writeListCSV<T>(List<T> data, string title, string path) where T : IFormattable
     {
         Directory.CreateDirectory(path);
@@ -28,11 +27,6 @@ public class csvSaver
 
 
             string line = (ticksDone + 1) + "," + aPos.ToString("csv", null);
-            if (ticksDone < 5)
-            {
-                Console.WriteLine(aPos.ToString("csv", null));
-                Console.WriteLine(line);
-            }
 
 
             builder.AppendLine(line);

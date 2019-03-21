@@ -21,7 +21,7 @@ public class csgoParser
 
     private Dictionary<int, int> ticksPerRound;
 
-    private string defaultSaveFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/CSV/";
+    private string defaultSaveFolder;
     private csvSaver csv = new csvSaver();
     private string filePath;
     private float parserTickrate = 32;
@@ -31,6 +31,13 @@ public class csgoParser
     public csgoParser(string fileName)
     {
         Construct(fileName);
+        defaultSaveFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/CSV/";
+    }
+
+    public csgoParser(string fileName,string saveFolder)
+    {
+        Construct(fileName);
+        defaultSaveFolder = saveFolder;
     }
 
     public void Construct(string fileName)
@@ -230,6 +237,7 @@ public class csgoParser
         return winningTeam;
     }
 
+    public void saveToCSV() => saveToCSV(defaultSaveFolder);
     public void saveToCSV(string path)
     {
         for (int i = 1; i <= RoundsPlayed; i++)
@@ -270,6 +278,11 @@ public class csgoParser
 
         csv.writeListCSV(data, title, path);
 
+    }
+
+    public string GetDefaultSaveFolder()
+    {
+        return defaultSaveFolder;
     }
 
     override

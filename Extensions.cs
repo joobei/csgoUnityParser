@@ -138,8 +138,7 @@ public static class Extensions
         char direcSep = Path.DirectorySeparatorChar;
         char altDirecSep = Path.AltDirectorySeparatorChar;
         char volumeSeperator = Path.VolumeSeparatorChar;
-        Console.WriteLine(direcSep);
-        Console.WriteLine(volumeSeperator);
+
 
         string pattern = string.Format(@"[^\w\.@{0}{1}{1}{2}{3}{3}-]", separator,direcSep,volumeSeperator, altDirecSep);
         strIn = Regex.Replace(strIn, pattern, "");
