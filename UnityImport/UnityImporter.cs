@@ -47,8 +47,8 @@ public static class UnityImporter
         foreach (AdvancedPosition item in advancedPath)
         {
             path.Add(item.GetPosition().castToUnityVector3());
-            viewX.Add(item.getOrientationX());
-            viewY.Add(item.getOrientationY());
+            viewX.Add(item.GetOrientationX());
+            viewY.Add(item.GetOrientationY());
         }
 
         GameObject map = GameObject.FindGameObjectsWithTag("map")[0];

@@ -10,9 +10,9 @@ using System.Linq;
 [TestFixture]
 public class csgoParserTests
 {
-    //TODO relative path
-    string pathMirageDemo = @"D:/Benutzer/5haffke/csgoParserProject/Tests/test_demos/mirage.dem";
-    string outputPath = @"D:/Benutzer/5haffke/csgoParserProject/Tests/output";
+    
+    string pathMirageDemo = @"Tests/test_demos/mirage.dem";
+    string outputPath = @"Tests/output";
    
     // A Test behaves as an ordinary method
     [Test]

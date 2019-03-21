@@ -22,12 +22,12 @@ public class AdvancedPosition : IFormattable
         return position;
     }
 
-    public float getOrientationX()
+    public float GetOrientationX()
     {
         return orientationX;
     }
 
-    public float getOrientationY()
+    public float GetOrientationY()
     {
         return orientationY;
     }
