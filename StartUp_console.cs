@@ -14,7 +14,7 @@ public class StartUp_console
 
         Console.Write(parser.ToString());
 
-        parser.parseAllRounds();
+        parser.ParseAllRounds();
 
 
         parser.SaveToCSV(saveFolder);

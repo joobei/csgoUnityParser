@@ -31,7 +31,7 @@ public class csgoParserTests
     {
         
         csgoParser parser = new csgoParser(pathMirageDemo);
-        parser.parseAllRounds();
+        parser.ParseAllRounds();
 
 
 
@@ -39,7 +39,7 @@ public class csgoParserTests
         Assert.AreEqual(25, parser.RoundsPlayed);
         Assert.AreEqual(25, parser.GetPlayerPathInAllRounds(parser.Players[0]).Keys.Count);
 
-        for (int i = 0; i < parser.RoundsPlayed, i++)
+        for (int i = 0; i < parser.RoundsPlayed; i++)
         {
             var allPlayerPathsInRound = parser.GetAllPlayerPathInRound(i); 
 
@@ -98,7 +98,7 @@ public class csgoParserTests
     public void testCSVWriter()
     {
         csgoParser parser = new csgoParser(pathMirageDemo);
-        parser.parseAllRounds();
+        parser.ParseAllRounds();
         Player p = parser.Players[0];
         string header;
         string secondLine;

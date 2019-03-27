@@ -88,12 +88,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdvancedPosition.cs" />
+    <Compile Include="Materials\AdvancedPosition.cs" />
     <Compile Include="Tests\extensionsTest.cs" />
     <Compile Include="csgoParser.cs" />
-    <Compile Include="csvSaver.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="intervall.cs" />
+    <Compile Include="Materials\csvSaver.cs" />
+    <Compile Include="Materials\Extensions.cs" />
+    <Compile Include="Materials\Interval.cs" />
     <Compile Include="StartUp_console.cs" />
     <Compile Include="Tests\csgoParserTest.cs" />
     <Compile Include="UnityImport\csgoParserEditor.cs" />

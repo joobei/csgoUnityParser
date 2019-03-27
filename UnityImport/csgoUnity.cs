@@ -26,7 +26,7 @@ public class csgoUnity : MonoBehaviour
 
     public void parseAllRounds()
     {
-        ReplayParsed = parser.parseAllRounds();
+        ReplayParsed = parser.ParseAllRounds();
     }
 
     public Player[] getPlayers()
@@ -37,12 +37,12 @@ public class csgoUnity : MonoBehaviour
 
     public Player[] getTerrorists()
     {
-        return parser.Terrorists.ToArray();
+        return parser.Terrorists;
     }
 
     public Player[] getCounterterrorsts()
     {
-        return parser.Counterterrorists.ToArray();
+        return parser.Counterterrorists;
     }
 
     public string getMatchFormattedTime()
