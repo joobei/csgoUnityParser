@@ -81,6 +81,17 @@ public class csgoParserTests
 
     }
 
+    [Test]
+    public void testKillfeed()
+    {
+        csgoParser parser = new csgoParser(pathMirageDemo);
+        parser.ParseAllRounds();
+
+        var killfeed = parser.GetKillFeed();
+
+        Assert.AreEqual(killfeed.Keys.Count, parser.RoundsPlayed);
+    }
+
     [Test]  
     public void testMainFunction()
     {
@@ -102,22 +113,26 @@ public class csgoParserTests
         Player p = parser.Players[0];
         string header;
         string secondLine;
+        string header2;
+        string secondLine2;
         int round = 1;
         Player illegalName = parser.Players[5];
 
         parser.SaveToCSV(p, round, outputPath);
         parser.SaveToCSV(illegalName, round, outputPath);
+        parser.saveOnlyKillFeed(outputPath);
 
         string[] files = Directory.GetFiles(outputPath);
-        string[] filePath = files.Where(f => f.ContainsAll(p.Name,round.ToString())).ToArray();
+        string[] filePlayerPath = files.Where(f => f.ContainsAll(p.Name, round.ToString())).ToArray();
+        string[] fileKillfeedPath = files.Where(f => f.ContainsAll("killFeed", round.ToString())).ToArray();
 
         //directory is created and file is saved there
         Assert.IsTrue(Directory.Exists(outputPath));
         Assert.IsNotEmpty(files);
-        Assert.IsNotEmpty(filePath);
+        Assert.IsNotEmpty(filePlayerPath);
+        Assert.IsNotEmpty(fileKillfeedPath);
 
-
-        using (StreamReader reader = new StreamReader(filePath[0]))
+        using (StreamReader reader = new StreamReader(filePlayerPath[0]))
         {
             header = reader.ReadLine();
             //file doesnt end after header
@@ -125,13 +140,23 @@ public class csgoParserTests
             secondLine = reader.ReadLine();
         }
 
+        using (StreamReader reader = new StreamReader(fileKillfeedPath[0]))
+        {
+            header2 = reader.ReadLine();
+            //file doesnt end after header
+            Assert.IsFalse(reader.EndOfStream);
+            secondLine2 = reader.ReadLine();
+        }
+
         int amountOfCommataInValues = secondLine.Count(f => f == ',');
         int amountOfCommataInHeader = header.Count(f => f == ',');
 
         //header is written correctly
         Assert.IsTrue(header.ContainsAll("ticks", "posX", "posY", "posZ"));
+        Assert.IsTrue(header2.ContainsAll("victim","killer","assist","weapon","headshot"));
         //BUG unwanted values are written in csv - maybe unicode|encoding error
         Assert.AreEqual(amountOfCommataInHeader, amountOfCommataInValues);
+        Assert.AreEqual(header2.Count(f => f == ','), secondLine2.Count(f => f == ','));
     }
 
     

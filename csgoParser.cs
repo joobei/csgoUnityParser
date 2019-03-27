@@ -306,6 +306,7 @@ public class csgoParser
     public void SaveToCSV()
     {
         SaveToCSV(_defaultSaveFolder);
+        saveOnlyKillFeed(_defaultSaveFolder);
     }
 
     /// <summary>
@@ -321,6 +322,7 @@ public class csgoParser
                 SaveToCSV(p, i, path);
             }
         }
+        saveOnlyKillFeed(path);
     }
 
     /// <summary>
@@ -378,7 +380,7 @@ public class csgoParser
 
         foreach (int item in _killFeed.Keys)
         {
-            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed _round " + item, header);
+            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed_round" + item, header);
             foreach (int tick in GetKillFeedInRound(item).Keys)
             {
                 List<PlayerKilledEventArgs> kills = GetKillFeedInRound(item)[tick];
