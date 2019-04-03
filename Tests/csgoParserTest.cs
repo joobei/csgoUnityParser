@@ -130,7 +130,6 @@ public class csgoParserTests
 
         //header is written correctly
         Assert.IsTrue(header.ContainsAll("ticks", "posX", "posY", "posZ"));
-        //BUG unwanted values are written in csv - maybe unicode|encoding error
         Assert.AreEqual(amountOfCommataInHeader, amountOfCommataInValues);
     }
 
