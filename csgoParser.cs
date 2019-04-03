@@ -182,9 +182,6 @@ public class csgoParser
 
                 parser.RoundOfficiallyEnd += (sender, e) =>
                 {
-                    
-
-                    
                     Dictionary<Player, List<AdvancedPosition>> temp = new Dictionary<Player, List<AdvancedPosition>>(playerPathsRound);
                     _pathInEveryRound.Add(roundsParsed, temp);
                     playerPathsRound.refillDictionary<Player, List<AdvancedPosition>, AdvancedPosition>();
