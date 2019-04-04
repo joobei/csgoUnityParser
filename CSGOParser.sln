@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSGO Parser", "CSGO Parser.csproj", "{4DC88426-8034-430D-AFA4-AA41244B0DD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSGOParser", "CSGOParser.csproj", "{4DC88426-8034-430D-AFA4-AA41244B0DD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {2D4EF0CB-3C00-4A0D-B602-2D17796B29F5}
+		SolutionGuid = {54585CAD-D4B6-4564-88CE-57FDF2946C69}
 	EndGlobalSection
 EndGlobal

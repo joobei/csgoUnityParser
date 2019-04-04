@@ -9,7 +9,14 @@ using System.Text.RegularExpressions;
 
 public static class Extensions
 {
-    public static V getFirstValue<T, V>(this Dictionary<T, V> dic)
+    /// <summary>
+    /// Gets the first key of a dictionary
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <param name="dic">dictionary</param>
+    /// <returns>the first key</returns>
+    public static V getFirstKey<T, V>(this Dictionary<T, V> dic)
     {
         int count = dic.Keys.Count;
 
@@ -20,43 +27,70 @@ public static class Extensions
     }
 
 
-    public static void refillDictionary<T, V, TList>(this Dictionary<T, V> dic) where V : List<TList>
+    /// <summary>
+    /// Fills a dictionary, whose values are lists, with new empty lists of the same type
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <typeparam name="TList">type of the list elements</typeparam>
+    /// <param name="dic">dictionary</param>
+    public static void refillDictionary<K, V, TList>(this Dictionary<K, V> dic) where V : List<TList>
     {
-        T[] keys = new T[dic.Keys.Count];
+        K[] keys = new K[dic.Keys.Count];
         dic.Keys.CopyTo(keys, 0);
 
-        foreach (T item in keys)
+        foreach (K item in keys)
         {
             dic[item] = (V)new List<TList>();
         }
     }
 
+    /// <summary>
+    /// Casts a source engine vector to a Numerics.Vector3
+    /// <remarks>switch z  and y axis -then invert x and z values</remarks>
+    /// </summary>
+    /// <param name="sourceVec">source engine vector</param>
+    /// <returns>vector3</returns>
     public static System.Numerics.Vector3 FromSourceEngineVector(Vector sourceVec)
     {
         System.Numerics.Vector3 res = new System.Numerics.Vector3(-sourceVec.X, sourceVec.Z, -sourceVec.Y);
         return res;
     }
 
+    /// <summary>
+    /// casts Sysem.Numerics.Vector3 to UnityEngine.Vector3
+    /// </summary>
+    /// <param name="vec">System.Numerics.Vector3</param>
+    /// <returns>UnityEngine.Vector3</returns>
     public static Vector3 castToUnityVector3(this System.Numerics.Vector3 vec)
     {
         return new Vector3(vec.X, vec.Y, vec.Z);
     }
 
+    /// <summary>
+    /// Adds an element to a list, which is a value of a dictionary 
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <typeparam name="TList">type of the list elements</typeparam>
+    /// <param name="dic"></param>
+    /// <param name="key">key to which list to add</param>
+    /// <param name="value">the element to add to the list</param>
     public static void AddValueToExistingList<K, V, TList>(this Dictionary<K, V> dic, K key, TList value) where V : List<TList>
     {
-        V v = dic.GetValueOrNull(key);
+        dic.TryGetValue(key, out V v);
         v.Add(value);
         dic[key] = v;
     }
 
-    public static V GetValueOrNull<K, V>(this Dictionary<K, V> dic, K key)
-    {
-        V temp;
-        dic.TryGetValue(key, out temp);
-        return temp;
-    }
-
-
+    /// <summary>
+    /// Fills a dictionary at each given key with a clone of the given value
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    /// <param name="dic"></param>
+    /// <param name="keys">the keys at which position to fill</param>
+    /// <param name="value">the value with which to fill</param>
     public static void fillWithValue<K, V>(this Dictionary<K, V> dic, K[] keys, V value)
     {
         foreach (var k in keys)
@@ -88,6 +122,12 @@ public static class Extensions
         return true;
     }
 
+    /// <summary>
+    /// Checks if a string contains all given chars
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="chars">the chars to check for</param>
+    /// <returns></returns>
     public static bool ContainsAll(this string str, char[] chars)
     {
         string[] charsInStrings = new string[chars.Length];
@@ -100,6 +140,13 @@ public static class Extensions
         return ContainsAll(str, charsInStrings[0], charsInStrings);
     }
 
+    /// <summary>
+    /// Checks whether a string contains any of the given substrings
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="match">a string to check</param>
+    /// <param name="moreOptions">more possible strings</param>
+    /// <returns></returns>
     public static bool ContainsAny(this string str, string match, params string[] moreOptions)
     {
         //copy all to one array
@@ -114,6 +161,12 @@ public static class Extensions
         return false;
     }
 
+    /// <summary>
+    ///  Checks whether a string contains any of the given chars
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="chars">chars to check for</param>
+    /// <returns></returns>
     public static bool containsAny(this string str, char[] chars)
     {
         string[] charsInStrings = new string[chars.Length];
@@ -150,13 +203,18 @@ public static class Extensions
     }
 
     
+    /// <summary>
+    /// Ensures a float's string representation is seperated by a dot instead of a comma
+    /// </summary>
+    /// <param name="f"></param>
+    /// <returns>string with the dot separation</returns>
     public static string DotSeparation(this float f)
     {
         string cultureSpecific = f.ToString();
         return Regex.Replace(cultureSpecific, ",", ".");
     }
 
-    public static T Clone<T>(this T source)
+    private static T Clone<T>(this T source)
     {
         if (!typeof(T).IsSerializable)
         {
