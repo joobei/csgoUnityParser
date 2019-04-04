@@ -46,7 +46,7 @@ public class csgoParserTests
             //for every tick in a round a position is saved
             var ticksPerRound = parser.GetTicksPerRound(i);
 
-            List<AdvancedPosition> path = allPlayerPathsInRound.getFirstValue();
+            List<AdvancedPosition> path = allPlayerPathsInRound.getFirstKey();
 
             Assert.AreEqual(ticksPerRound, path.Count);
             
