@@ -3,10 +3,13 @@ using System.IO;
 
 public class StartUp_console
 {
+    /// <summary>
+    /// Saves the players' paths to a CSV
+    /// </summary>
+    /// <param name="args">replay file, and optional output folder</param>
     public static void Main(string[] args)
-    {
-        string saveFolder;
-        if (!AreProperArguments(args, out saveFolder)) return;
+    { 
+        if (!AreProperArguments(args, out string saveFolder)) return;
 
         string fileReplay = args[0];
 
@@ -16,12 +19,12 @@ public class StartUp_console
 
         parser.ParseAllRounds();
 
-
         parser.SaveToCSV(saveFolder);
 
         Console.WriteLine("parsing finished");
         Console.Write(parser.GetEndGameStatsString());
     }
+
 
     private static bool AreProperArguments(string[] args, out string saveFolder)
     {
@@ -39,6 +42,9 @@ public class StartUp_console
         }
     }
 
+    /// <summary>
+    /// Checks if both arguments are valid paths
+    /// </summary>
     private static bool checkIntegrity(string[] args, out string saveFolder)
     {
         saveFolder = saveFolder = args[1];
@@ -48,6 +54,10 @@ public class StartUp_console
         return goodFile && allowedPath;
     }
 
+
+    /// <summary>
+    /// checks if the file is a proper replay by extension
+    /// </summary>
     private static bool checkIntegrity(string arg, out string saveFolder)
     {
         saveFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/CSV/";
