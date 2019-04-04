@@ -39,14 +39,14 @@ public class csgoParserTests
         Assert.AreEqual(25, parser.RoundsPlayed);
         Assert.AreEqual(25, parser.GetPlayerPathInAllRounds(parser.Players[0]).Keys.Count);
 
-        for (int i = 1; i < parser.RoundsPlayed; i++)
+        for (int i = 0; i < parser.RoundsPlayed; i++)
         {
             var allPlayerPathsInRound = parser.GetAllPlayerPathInRound(i); 
 
             //for every tick in a round a position is saved
             var ticksPerRound = parser.GetTicksPerRound(i);
 
-            List<AdvancedPosition> path = allPlayerPathsInRound.getFirstValue();
+            List<AdvancedPosition> path = allPlayerPathsInRound.getFirstKey();
 
             Assert.AreEqual(ticksPerRound, path.Count);
             

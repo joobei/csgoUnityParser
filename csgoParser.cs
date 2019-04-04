@@ -9,7 +9,6 @@ using System.Numerics;
 /// <summary>
 /// Parses a replay and saves each player's position and view direction,
 /// as well as game-specific info like map, match time or participating players
-/// <remarks>all round indexes start at 1</remarks>
 /// </summary>
 public class csgoParser
 {
@@ -183,9 +182,6 @@ public class csgoParser
 
                 parser.RoundOfficiallyEnd += (sender, e) =>
                 {
-                    roundsParsed++;
-
-                    //index starts at 1
                     Dictionary<Player, List<AdvancedPosition>> temp = new Dictionary<Player, List<AdvancedPosition>>(playerPathsRound);
                     _pathInEveryRound.Add(roundsParsed, temp);
                     playerPathsRound.refillDictionary<Player, List<AdvancedPosition>, AdvancedPosition>();
@@ -195,8 +191,9 @@ public class csgoParser
                     playersKilledThatRound = new Dictionary<int, List<PlayerKilledEventArgs>>();
 
                     _ticksPerRound.Add(roundsParsed, ticksDone);
-                    ticksDone = 0;
 
+                    ticksDone = 0;
+                    roundsParsed++;
                     freezeTimeEnded = false;
                 };
 
@@ -244,10 +241,7 @@ public class csgoParser
         Dictionary<int,
         List<AdvancedPosition>> res = new Dictionary<int,
         List<AdvancedPosition>>();
-        for (int i = 1;
-        i <= RoundsPlayed;
-
-        i++)
+        for (int i = 0; i < RoundsPlayed;i++)
         {
             res.Add(i, GetPlayerPathInRound(player, i));
         }
@@ -314,7 +308,7 @@ public class csgoParser
     /// <param name="path">save folder</param>
     public void SaveToCSV(string path)
     {
-        for (int i = 1; i <= RoundsPlayed; i++)
+        for (int i = 0; i < RoundsPlayed; i++)
         {
             foreach (Player p in Players)
             {
