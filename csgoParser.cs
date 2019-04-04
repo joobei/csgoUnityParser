@@ -241,7 +241,7 @@ public class csgoParser
         Dictionary<int,
         List<AdvancedPosition>> res = new Dictionary<int,
         List<AdvancedPosition>>();
-        for (int i = 0; i <= RoundsPlayed;i++)
+        for (int i = 0; i < RoundsPlayed;i++)
         {
             res.Add(i, GetPlayerPathInRound(player, i));
         }
@@ -308,7 +308,7 @@ public class csgoParser
     /// <param name="path">save folder</param>
     public void SaveToCSV(string path)
     {
-        for (int i = 0; i <= RoundsPlayed; i++)
+        for (int i = 0; i < RoundsPlayed; i++)
         {
             foreach (Player p in Players)
             {
