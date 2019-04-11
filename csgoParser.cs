@@ -162,12 +162,19 @@ public class csgoParser
 
                 parser.PlayerKilled += (sender, e) =>
                 {
-                    //TODO simultaneously killed players
-                    if (playersKilledThatRound.ContainsKey(ticksDone))
-                    {
-                        playersKilledThatRound.AddValueToExistingList(ticksDone, e);
+                    if (hasMatchStarted)
+                    {  
+                        if (playersKilledThatRound.ContainsKey(ticksDone))
+                        {
+                            playersKilledThatRound.AddValueToExistingList(ticksDone, e);
+                        }
+                        else
+                        {
+                            List<PlayerKilledEventArgs> list = new List<PlayerKilledEventArgs>();
+                            list.Add(e);
+                            playersKilledThatRound.Add(ticksDone, list);
+                        }
                     }
-                    else playersKilledThatRound.Add(ticksDone, new List<PlayerKilledEventArgs>());
                 };
 
                 parser.RoundMVP += (sender, e) =>
@@ -241,7 +248,7 @@ public class csgoParser
         Dictionary<int,
         List<AdvancedPosition>> res = new Dictionary<int,
         List<AdvancedPosition>>();
-        for (int i = 0; i < RoundsPlayed;i++)
+        for (int i = 0; i < RoundsPlayed; i++)
         {
             res.Add(i, GetPlayerPathInRound(player, i));
         }
@@ -315,6 +322,8 @@ public class csgoParser
                 SaveToCSV(p, i, path);
             }
         }
+        saveOnlyKillFeed(path);
+        saveGameInfo(path);
     }
 
     /// <summary>
@@ -357,6 +366,8 @@ public class csgoParser
 
         string header = "ticks,posX,posY,posZ,viewX,viewY";
 
+        path += "/round_" + round;
+
         csvSaver.writeListCSV(data, title, path, header);
 
     }
@@ -368,21 +379,32 @@ public class csgoParser
     public void saveOnlyKillFeed(string pathDirectory = "")
     {
         if (string.IsNullOrEmpty(pathDirectory)) pathDirectory = _defaultSaveFolder;
-        string header = "victim,killer,assist,weapon,headshot";
+        string header = "tick,victim,killer,assist,weapon,headshot";
 
-        foreach (int item in _killFeed.Keys)
+        foreach (int round in _killFeed.Keys)
         {
-            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed _round " + item, header);
-            foreach (int tick in GetKillFeedInRound(item).Keys)
+            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed_round" + round, header);
+
+            foreach (int tick in GetKillFeedInRound(round).Keys)
             {
-                List<PlayerKilledEventArgs> kills = GetKillFeedInRound(item)[tick];
+                List<PlayerKilledEventArgs> kills = GetKillFeedInRound(round)[tick];
                 foreach (PlayerKilledEventArgs args in kills)
                 {
-                    string csvWritable = string.Format("{0},{1},{2},{3},{4},{5}", tick, args.Victim.Name, args.Killer.Name, args.Assister.Name, args.Weapon.OriginalString, args.Headshot);
+                    string csvWritable = string.Format("{0},{1}", tick, args.ToCSVString());
                     csvSaver.addLineToFile(pathFile, csvWritable);
                 }
             }
         }
+    }
+
+    public void saveGameInfo(string pathDirectory = "")
+    {
+        if (string.IsNullOrEmpty(pathDirectory)) pathDirectory = _defaultSaveFolder;
+        string header = "map,match time,rounds played,winner team, file path";
+
+        string pathFile = csvSaver.createCSVFile(pathDirectory, "game_info", header);
+
+        csvSaver.addLineToFile(pathFile,String.Format("{0},{1},{2},{3},{4}",Map,GetFormattedMatchTime(),RoundsPlayed,_winningTeam,_filePath));
     }
 
     /// <summary>

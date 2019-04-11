@@ -81,6 +81,25 @@ public class csgoParserTests
 
     }
 
+    [Test]
+    public void testKillfeed()
+    {
+        csgoParser parser = new csgoParser(pathMirageDemo);
+        parser.ParseAllRounds();
+
+        Dictionary<int, Dictionary<int, List<PlayerKilledEventArgs>>> killfeed = parser.GetKillFeed();
+
+        Assert.AreEqual(killfeed.Keys.Count, parser.RoundsPlayed);
+        foreach (var item in killfeed.Keys)
+        {
+            Dictionary<int, List<PlayerKilledEventArgs>> kills =  killfeed[item];
+            //Latest kill is still in the round
+            Assert.LessOrEqual(kills.Keys.Last(), parser.GetTicksPerRound(item));
+            //No more than 10 deaths are possible in a round
+            Assert.LessOrEqual(kills.Count,10);
+        }
+    }
+
     [Test]  
     public void testMainFunction()
     {
@@ -102,22 +121,26 @@ public class csgoParserTests
         Player p = parser.Players[0];
         string header;
         string secondLine;
+        string header2;
+        string secondLine2;
         int round = 1;
         Player illegalName = parser.Players[5];
 
         parser.SaveToCSV(p, round, outputPath);
         parser.SaveToCSV(illegalName, round, outputPath);
+        parser.saveOnlyKillFeed(outputPath);
 
-        string[] files = Directory.GetFiles(outputPath);
-        string[] filePath = files.Where(f => f.ContainsAll(p.Name,round.ToString())).ToArray();
+        string[] files = Directory.GetFiles(outputPath,"*.csv",SearchOption.AllDirectories);
+        string[] filePlayerPath = files.Where(f => f.ContainsAll(p.Name, round.ToString())).ToArray();
+        string[] fileKillfeedPath = files.Where(f => f.ContainsAll("killFeed", round.ToString())).ToArray();
 
         //directory is created and file is saved there
         Assert.IsTrue(Directory.Exists(outputPath));
         Assert.IsNotEmpty(files);
-        Assert.IsNotEmpty(filePath);
+        Assert.IsNotEmpty(filePlayerPath);
+        Assert.IsNotEmpty(fileKillfeedPath);
 
-
-        using (StreamReader reader = new StreamReader(filePath[0]))
+        using (StreamReader reader = new StreamReader(filePlayerPath[0]))
         {
             header = reader.ReadLine();
             //file doesnt end after header
@@ -125,12 +148,22 @@ public class csgoParserTests
             secondLine = reader.ReadLine();
         }
 
+        using (StreamReader reader = new StreamReader(fileKillfeedPath[0]))
+        {
+            header2 = reader.ReadLine();
+            //file doesnt end after header
+            Assert.IsFalse(reader.EndOfStream);
+            secondLine2 = reader.ReadLine();
+        }
+
         int amountOfCommataInValues = secondLine.Count(f => f == ',');
         int amountOfCommataInHeader = header.Count(f => f == ',');
 
         //header is written correctly
         Assert.IsTrue(header.ContainsAll("ticks", "posX", "posY", "posZ"));
+      
         Assert.AreEqual(amountOfCommataInHeader, amountOfCommataInValues);
+        Assert.AreEqual(header2.Count(f => f == ','), secondLine2.Count(f => f == ','));
     }
 
     

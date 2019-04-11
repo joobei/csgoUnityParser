@@ -214,6 +214,19 @@ public static class Extensions
         return Regex.Replace(cultureSpecific, ",", ".");
     }
 
+    /// <summary>
+    /// Returns a string with the important details of a kill, ready for CSV files
+    /// <remarks>Order is: Victim,Killer,Assist, Weapon, Headshot </remarks>
+    /// </summary>
+    /// <param name="args">the kill event</param>
+    /// <returns>formatted string</returns>
+    public static string ToCSVString(this PlayerKilledEventArgs args)
+    {
+        string assist = "";
+        if (args.Assister != null) assist = args.Assister.Name.CleanInput();
+        return String.Format("{0},{1},{2},{3},{4}",args.Victim.Name.CleanInput(), args.Killer.Name.CleanInput(), assist, args.Weapon.Weapon, args.Headshot);
+    }
+
     private static T Clone<T>(this T source)
     {
         if (!typeof(T).IsSerializable)
