@@ -87,9 +87,17 @@ public class csgoParserTests
         csgoParser parser = new csgoParser(pathMirageDemo);
         parser.ParseAllRounds();
 
-        var killfeed = parser.GetKillFeed();
+        Dictionary<int, Dictionary<int, List<PlayerKilledEventArgs>>> killfeed = parser.GetKillFeed();
 
         Assert.AreEqual(killfeed.Keys.Count, parser.RoundsPlayed);
+        foreach (var item in killfeed.Keys)
+        {
+            Dictionary<int, List<PlayerKilledEventArgs>> kills =  killfeed[item];
+            //Latest kill is still in the round
+            Assert.LessOrEqual(kills.Keys.Last(), parser.GetTicksPerRound(item));
+            //No more than 10 deaths are possible in a round
+            Assert.LessOrEqual(kills.Count,10);
+        }
     }
 
     [Test]  
