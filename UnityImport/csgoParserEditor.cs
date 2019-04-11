@@ -25,6 +25,8 @@ public class csgoParserEditor : Editor
         if (GUILayout.Button("load replay"))
         {
             string fileName = EditorUtility.OpenFilePanel("choose replay", "", "dem");
+            set.setParser(fileName);
+
             set.parseToMatchStart();
             UnityImporter.loadCorrespondingMap(set.GetMap());
             mats = UnityImporter.loadMaterials();

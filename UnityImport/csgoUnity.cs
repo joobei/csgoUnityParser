@@ -19,6 +19,13 @@ public class csgoUnity : MonoBehaviour
         parser = new csgoParser(fileName);
     }
 
+
+    public void setParser(string fileName)
+    {
+        parser = new csgoParser(fileName);
+        Reset();
+    }
+
     public void parseToMatchStart()
     {
         ReplayLoaded = parser.ParseToMatchStart();
@@ -31,7 +38,7 @@ public class csgoUnity : MonoBehaviour
 
     public Player[] getPlayers()
     {
-        if(ReplayParsed) throw new System.Exception("Parse replay first");
+        if(!ReplayParsed) throw new System.Exception("Parse replay first");
         return parser.Players;
     }
 
