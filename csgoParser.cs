@@ -162,12 +162,19 @@ public class csgoParser
 
                 parser.PlayerKilled += (sender, e) =>
                 {
-                    //TODO simultaneously killed players
-                    if (playersKilledThatRound.ContainsKey(ticksDone))
-                    {
-                        playersKilledThatRound.AddValueToExistingList(ticksDone, e);
+                    if (hasMatchStarted)
+                    {  
+                        if (playersKilledThatRound.ContainsKey(ticksDone))
+                        {
+                            playersKilledThatRound.AddValueToExistingList(ticksDone, e);
+                        }
+                        else
+                        {
+                            List<PlayerKilledEventArgs> list = new List<PlayerKilledEventArgs>();
+                            list.Add(e);
+                            playersKilledThatRound.Add(ticksDone, list);
+                        }
                     }
-                    else playersKilledThatRound.Add(ticksDone, new List<PlayerKilledEventArgs>());
                 };
 
                 parser.RoundMVP += (sender, e) =>
@@ -241,7 +248,7 @@ public class csgoParser
         Dictionary<int,
         List<AdvancedPosition>> res = new Dictionary<int,
         List<AdvancedPosition>>();
-        for (int i = 0; i < RoundsPlayed;i++)
+        for (int i = 0; i < RoundsPlayed; i++)
         {
             res.Add(i, GetPlayerPathInRound(player, i));
         }
@@ -380,7 +387,7 @@ public class csgoParser
             {
                 List<PlayerKilledEventArgs> kills = GetKillFeedInRound(round)[tick];
                 foreach (PlayerKilledEventArgs args in kills)
-                { 
+                {
                     string csvWritable = string.Format("{0},{1}", tick, args.ToCSVString());
                     csvSaver.addLineToFile(pathFile, csvWritable);
                 }
