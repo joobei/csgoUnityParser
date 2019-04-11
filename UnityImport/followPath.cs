@@ -15,6 +15,7 @@ public class followPath : MonoBehaviour
 
     public float tickRate = 1f;
 
+
     private void Start()
     { 
         waypoints = pathToFollow.waypoints;
@@ -23,7 +24,7 @@ public class followPath : MonoBehaviour
         InvokeRepeating("TickUpdate",0f, 1 / tickRate);
     }
 
-   
+   //TODO  make a coroutine
     void TickUpdate()
     {
         Vector3 waypointPosition = waypoints[waypointID].position;

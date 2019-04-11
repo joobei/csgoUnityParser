@@ -109,9 +109,6 @@
     <EmbeddedResource Include="Tests\test_demos\mirage.dem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <None Include="UnityImport\csgoParserEditor.cs.meta" />
-    <None Include="UnityImport\csgoUnity.cs.meta" />
-    <None Include="UnityImport\UnityImporter.cs.meta" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
