@@ -307,7 +307,6 @@ public class csgoParser
     public void SaveToCSV()
     {
         SaveToCSV(_defaultSaveFolder);
-        saveOnlyKillFeed(_defaultSaveFolder);
     }
 
     /// <summary>
@@ -324,6 +323,7 @@ public class csgoParser
             }
         }
         saveOnlyKillFeed(path);
+        saveGameInfo(path);
     }
 
     /// <summary>
@@ -366,6 +366,8 @@ public class csgoParser
 
         string header = "ticks,posX,posY,posZ,viewX,viewY";
 
+        path += "/round_" + round;
+
         csvSaver.writeListCSV(data, title, path, header);
 
     }
@@ -393,6 +395,16 @@ public class csgoParser
                 }
             }
         }
+    }
+
+    public void saveGameInfo(string pathDirectory = "")
+    {
+        if (string.IsNullOrEmpty(pathDirectory)) pathDirectory = _defaultSaveFolder;
+        string header = "map,match time,rounds played,winner team, file path";
+
+        string pathFile = csvSaver.createCSVFile(pathDirectory, "game_info", header);
+
+        csvSaver.addLineToFile(pathFile,String.Format("{0},{1},{2},{3},{4}",Map,GetFormattedMatchTime(),RoundsPlayed,_winningTeam,_filePath));
     }
 
     /// <summary>

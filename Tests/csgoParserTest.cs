@@ -130,7 +130,7 @@ public class csgoParserTests
         parser.SaveToCSV(illegalName, round, outputPath);
         parser.saveOnlyKillFeed(outputPath);
 
-        string[] files = Directory.GetFiles(outputPath);
+        string[] files = Directory.GetFiles(outputPath,"*.csv",SearchOption.AllDirectories);
         string[] filePlayerPath = files.Where(f => f.ContainsAll(p.Name, round.ToString())).ToArray();
         string[] fileKillfeedPath = files.Where(f => f.ContainsAll("killFeed", round.ToString())).ToArray();
 
