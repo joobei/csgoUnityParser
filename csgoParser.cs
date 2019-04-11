@@ -370,17 +370,18 @@ public class csgoParser
     public void saveOnlyKillFeed(string pathDirectory = "")
     {
         if (string.IsNullOrEmpty(pathDirectory)) pathDirectory = _defaultSaveFolder;
-        string header = "victim,killer,assist,weapon,headshot";
+        string header = "tick,victim,killer,assist,weapon,headshot";
 
-        foreach (int item in _killFeed.Keys)
+        foreach (int round in _killFeed.Keys)
         {
-            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed_round" + item, header);
-            foreach (int tick in GetKillFeedInRound(item).Keys)
+            string pathFile = csvSaver.createCSVFile(pathDirectory, "killFeed_round" + round, header);
+
+            foreach (int tick in GetKillFeedInRound(round).Keys)
             {
-                List<PlayerKilledEventArgs> kills = GetKillFeedInRound(item)[tick];
+                List<PlayerKilledEventArgs> kills = GetKillFeedInRound(round)[tick];
                 foreach (PlayerKilledEventArgs args in kills)
-                {
-                    string csvWritable = string.Format("{0},{1},{2},{3},{4},{5}", tick, args.Victim.Name, args.Killer.Name, args.Assister.Name, args.Weapon.OriginalString, args.Headshot);
+                { 
+                    string csvWritable = string.Format("{0},{1}", tick, args.ToCSVString());
                     csvSaver.addLineToFile(pathFile, csvWritable);
                 }
             }

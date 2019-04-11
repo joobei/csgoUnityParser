@@ -214,6 +214,14 @@ public static class Extensions
         return Regex.Replace(cultureSpecific, ",", ".");
     }
 
+
+    public static string ToCSVString(this PlayerKilledEventArgs args)
+    {
+        string assist = "";
+        if (args.Assister != null) assist = args.Assister.Name;
+        return String.Format("{0},{1},{2},{3},{4}",args.Victim.Name, args.Killer.Name, assist, args.Weapon.Weapon, args.Headshot);
+    }
+
     private static T Clone<T>(this T source)
     {
         if (!typeof(T).IsSerializable)
